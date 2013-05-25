@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Polgun.ComputationGeometry", "Polgun.ComputationGeometry\Polgun.ComputationGeometry.csproj", "{75F62C46-37A4-459C-A124-DAFF14FDD295}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Polgun.ComputationGeometry.Tests", "Polgun.ComputationGeometry.Tests\Polgun.ComputationGeometry.Tests.csproj", "{B14D53A0-9E1E-46D0-A3AA-3DE5173D8D82}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{75F62C46-37A4-459C-A124-DAFF14FDD295}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{75F62C46-37A4-459C-A124-DAFF14FDD295}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{75F62C46-37A4-459C-A124-DAFF14FDD295}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{75F62C46-37A4-459C-A124-DAFF14FDD295}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B14D53A0-9E1E-46D0-A3AA-3DE5173D8D82}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B14D53A0-9E1E-46D0-A3AA-3DE5173D8D82}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B14D53A0-9E1E-46D0-A3AA-3DE5173D8D82}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B14D53A0-9E1E-46D0-A3AA-3DE5173D8D82}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
