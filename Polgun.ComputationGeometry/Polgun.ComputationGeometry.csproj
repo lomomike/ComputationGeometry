@@ -45,6 +45,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Point.cs" />
+    <Compile Include="FindPairResult.cs" />
+    <Compile Include="PointsDistances.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Size.cs" />
   </ItemGroup>
