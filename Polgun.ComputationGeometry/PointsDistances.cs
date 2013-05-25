@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 
 namespace Polgun.ComputationGeometry
 {
@@ -7,11 +8,8 @@ namespace Polgun.ComputationGeometry
     {
         public static FindPairResult FindClosestPair(IList<Point> points)
         {
-            if (points == null)
-                throw new ArgumentNullException("points");
-
-            if (points.Count == 0)
-                throw new ArgumentOutOfRangeException("points", "points length is 0");
+            Contract.Requires<ArgumentNullException>(points != null, "points");
+            Contract.Requires<ArgumentOutOfRangeException>(points.Count > 0);
 
             if (points.Count == 1)
             {
