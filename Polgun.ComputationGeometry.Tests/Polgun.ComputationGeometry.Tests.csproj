@@ -48,10 +48,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="PointTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SizeTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Polgun.ComputationGeometry\Polgun.ComputationGeometry.csproj">
+      <Project>{75f62c46-37a4-459c-a124-daff14fdd295}</Project>
+      <Name>Polgun.ComputationGeometry</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
