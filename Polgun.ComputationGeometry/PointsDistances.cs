@@ -7,158 +7,168 @@ namespace Polgun.ComputationGeometry
 {
     public static class PointsDistances
     {
+        /// <summary>
+        /// Find the closest points on the plane.
+        /// </summary>
+        /// <param name="points">The sequence of points on a plane.</param>
+        /// <returns>The pair of two closest points on the plane and a distance between them.</returns>
         public static FindPairResult FindClosestPair(IList<Point> points)
         {
-            Contract.Requires<ArgumentNullException>(points != null, "points");
-            Contract.Requires<ArgumentOutOfRangeException>(points.Count > 0);
-
-            if (points.Count == 1)
+            return RunPointsCalculation(points, pts =>
             {
-                return new FindPairResult(points[0], points[0]);
-            }
-            else if (points.Count == 2)
-            {
-                return new FindPairResult(points[0], points[1]);
-            }
-            else // Срабатывает алгоритм расчета
-            {
-
-                List<Point> pnts = new List<Point>(points);
-                List<Point> ySeries = new List<Point>(points);
+                var pnts = new List<Point>(pts);
                 pnts.Sort((first, second) => first.X.CompareTo(second.X));
+
+                var ySeries = new List<Point>(pts);
                 ySeries.Sort((first, second) => first.Y.CompareTo(second.Y));
 
-                Point point1;
-                Point point2;
+                Point point1, point2;
                 FindClosestPoints(pnts, ySeries, out point1, out point2);
                 return new FindPairResult(point1, point2);
-            }
+            });
         }
 
+        /// <summary>
+        /// Find the fartherst points on the plane.
+        /// </summary>
+        /// <param name="points">The sequence of points on a plane.</param>
+        /// <returns>The pair of two farthest points on the plane and a distance between them.</returns>
         public static FindPairResult FindFarthestPair(IList<Point> points)
         {
-            Contract.Requires<ArgumentNullException>(points != null, "points");
-            Contract.Requires<ArgumentOutOfRangeException>(points.Count > 0);
-
-            if (points.Count == 1)
-            {
-                return new FindPairResult(points[0], points[0]);
-            }
-            else if (points.Count == 2)
-            {
-                return new FindPairResult(points[0], points[1]);
-            }
-            else // Срабатывает алгоритм расчета
-            {
-                Point point1;
-                Point point2;
-                RotatingCalipers(points, out point1, out point2);
-                return new FindPairResult(point1, point2);
-            }
+            return RunPointsCalculation(points, pts =>
+                {
+                    Point point1, point2;
+                    FindFarthestPoints(pts, out point1, out point2);
+                    return new FindPairResult(point1, point2);
+                });
         }
 
+        #region Find closest points functions
         private static double FindClosestPoints(List<Point> points, List<Point> ySeries, out Point point1, out Point point2)
         {
-            //Если количество точек <= 3,
-            // то находим кратчайшее расстояние простым перебором
-            // Для оптимизации расчетов вычисляем не расстояния, а квадраты расстояний
+            // If count of points is less or equals 3,
+            // find the shortest distance with simple search.
+            // Calculate the squares of distances to optimize the calculation
             if (points.Count <= 3)
             {
-                double minDistance = double.MaxValue;
-                point1 = point2 = default(Point);
-
-                for (int i = 0; i < points.Count - 1; ++i)
-                    for (int j = i + 1; j < points.Count; ++j)
-                    {
-                        double distance = SquareDistance(points[i], points[j]);
-                        if (distance < minDistance)
-                        {
-                            minDistance = distance;
-                            point1 = points[i];
-                            point2 = points[j];
-                        }
-                    }
-
-                return minDistance;
+                return SearchClosestInLittleSequrnce(points, out point1, out point2);
             }
-            else // В наборе точек больше 3х, будем проводить деление и рекурсивный вызов
+
+            // Find vertical line l, wich devides the set of points to two subsets
+            List<Point> leftPoints;
+            List<Point> rightPoints;
+            List<Point> leftY;
+            List<Point> rightY;
+            var lIndex = DevidePointsSet(points, ySeries, out leftPoints, out rightPoints, out leftY, out rightY);
+
+            // Make recursive call
+            Point ind11, ind12, ind21, ind22;
+            double delta1 = FindClosestPoints(leftPoints, leftY, out ind11, out ind12);
+            double delta2 = FindClosestPoints(rightPoints, rightY, out ind21, out ind22);
+
+            // Find the least distance in pair
+            double delta;
+            if (delta1 > delta2)
             {
-                //Находим вертикальную прямую l, которая делит множество точек points на два подмножества.
-                int lIndex = points.Count / 2 + 1;
-
-                List<Point> leftPoints = new List<Point>();
-                List<Point> rightPoints = new List<Point>();
-
-                //Разбиение на правое и левое подмножества
-                for (int i = 0; i < points.Count; ++i)
-                {
-                    if (i < lIndex)
-                        leftPoints.Add(points[i]);
-                    else
-                        rightPoints.Add(points[i]);
-                }
-
-                //Формирование отсортированного списка координат Y
-                List<Point> leftY = new List<Point>();
-                List<Point> rightY = new List<Point>();
-                for (int i = 0; i < ySeries.Count; ++i)
-                    if (leftPoints.Contains(ySeries[i]))
-                        leftY.Add(ySeries[i]);
-                    else
-                        rightY.Add(ySeries[i]);
-
-                Point ind11, ind12, ind21, ind22;
-                double delta1 = FindClosestPoints(leftPoints, leftY, out ind11, out ind12);
-                double delta2 = FindClosestPoints(rightPoints, rightY, out ind21, out ind22);
-
-                //Находи наименьшее расстояние из пары
-                double delta;
-                if (delta1 > delta2)
-                {
-                    delta = delta1;
-                    point1 = ind11;
-                    point2 = ind12;
-                }
-                else
-                {
-                    delta = delta2;
-                    point1 = ind21;
-                    point2 = ind22;
-                }
-
-                // Проверка наличия ближайшего расстояния в полосе 2*delta;
-
-                List<Point> yLine = new List<Point>();
-                double d1 = points[lIndex].X - delta, d2 = points[lIndex].X + delta;
-
-                for (int i = 0; i < ySeries.Count; ++i)
-                {
-                    if (ySeries[i].X >= d1 && ySeries[i].X <= d2)
-                        yLine.Add(ySeries[i]);
-                }
-
-                for (int i = 0; i < yLine.Count; ++i)
-                {
-                    Point p1 = yLine[i];
-                    for (int j = i + 1; j < yLine.Count && (j - i) <= 7; ++j)
-                    {
-                        Point p2 = yLine[j];
-                        double distance = SquareDistance(p1, p2);
-                        if (distance < delta)
-                        {
-                            delta = distance;
-                            point1 = p1;
-                            point2 = p2;
-                        }
-                    }
-                }
-
-                return delta;
-
+                delta = delta1;
+                point1 = ind11;
+                point2 = ind12;
             }
+            else
+            {
+                delta = delta2;
+                point1 = ind21;
+                point2 = ind22;
+            }
+
+            // Find the shortest distance in the 2 * delta field
+            return FindInDeltaField(points, ySeries, lIndex, delta, ref point1, ref point2);
         }
 
-        private static void RotatingCalipers(IList<Point> pts, out Point point1, out Point point2)
+        private static double SearchClosestInLittleSequrnce(List<Point> points, out Point point1, out Point point2)
+        {
+            double minDistance = double.MaxValue;
+            point1 = point2 = default(Point);
+
+            for (int i = 0; i < points.Count - 1; ++i)
+                for (int j = i + 1; j < points.Count; ++j)
+                {
+                    double distance = SquareDistance(points[i], points[j]);
+                    if (distance < minDistance)
+                    {
+                        minDistance = distance;
+                        point1 = points[i];
+                        point2 = points[j];
+                    }
+                }
+
+            return minDistance;
+        }
+
+        private static int DevidePointsSet(List<Point> points, List<Point> ySeries, 
+                                           out List<Point> leftPoints, out List<Point> rightPoints, 
+                                           out List<Point> leftY, out List<Point> rightY)
+        {
+            int lIndex = points.Count/2 + 1;
+
+            leftPoints = new List<Point>();
+            rightPoints = new List<Point>();
+
+            //Разбиение на правое и левое подмножества
+            for (int i = 0; i < points.Count; ++i)
+            {
+                if (i < lIndex)
+                    leftPoints.Add(points[i]);
+                else
+                    rightPoints.Add(points[i]);
+            }
+
+            // Make sorting list of Y coordinates
+            leftY = new List<Point>();
+            rightY = new List<Point>();
+            for (int i = 0; i < ySeries.Count; ++i)
+                if (leftPoints.Contains(ySeries[i]))
+                    leftY.Add(ySeries[i]);
+                else
+                    rightY.Add(ySeries[i]);
+            return lIndex;
+        }
+
+        private static double FindInDeltaField(List<Point> points, List<Point> ySeries, 
+                                               int lIndex, double delta, 
+                                               ref Point point1, ref Point point2)
+        {
+            List<Point> yLine = new List<Point>();
+            double d1 = points[lIndex].X - delta, d2 = points[lIndex].X + delta;
+
+            for (int i = 0; i < ySeries.Count; ++i)
+            {
+                if (ySeries[i].X >= d1 && ySeries[i].X <= d2)
+                    yLine.Add(ySeries[i]);
+            }
+
+            for (int i = 0; i < yLine.Count; ++i)
+            {
+                Point p1 = yLine[i];
+                for (int j = i + 1; j < yLine.Count && (j - i) <= 7; ++j)
+                {
+                    Point p2 = yLine[j];
+                    double distance = SquareDistance(p1, p2);
+                    if (distance < delta)
+                    {
+                        delta = distance;
+                        point1 = p1;
+                        point2 = p2;
+                    }
+                }
+            }
+            return delta;
+        }
+
+        #endregion Find closest points functions
+
+        #region Find farthest points functions
+        private static void FindFarthestPoints(IList<Point> pts, out Point point1, out Point point2)
         {
             Point[][] l_u = ConvexHull_LU(pts.ToArray());
             Point[] lower = l_u[0];
@@ -234,21 +244,35 @@ namespace Polgun.ComputationGeometry
             l.RemoveAt(n - 1);
         }
 
-
         private static int Compare(Point a, Point b)
         {
             if (a.X < b.X)
             {
                 return -1;
             }
-            else if (a.X == b.X)
+            if (a.X == b.X)
             {
                 if (a.Y < b.Y)
                     return -1;
-                else if (a.Y == b.Y)
+                if (a.Y == b.Y)
                     return 0;
             }
             return 1;
+        } 
+        #endregion
+
+        private static FindPairResult RunPointsCalculation(IList<Point> points,
+                                                           Func<IList<Point>, FindPairResult> calculator)
+        {
+            Contract.Requires<ArgumentNullException>(points != null, "points");
+            Contract.Requires<ArgumentOutOfRangeException>(points.Count > 0);
+
+            switch (points.Count)
+            {
+                case 1: return new FindPairResult(points[0], points[0]);
+                case 2: return new FindPairResult(points[0], points[1]);
+                default: return calculator(points);
+            }
         }
 
         internal static double SquareDistance(Point p1, Point p2)

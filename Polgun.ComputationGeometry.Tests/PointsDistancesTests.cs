@@ -12,14 +12,14 @@ namespace Polgun.ComputationGeometry.Tests
         #region FindClosestPoint Tests
         [Test]
         [ExpectedException(typeof(ArgumentNullException))]
-        public void TestUnitOfWork()
+        public void TestFindClosestInNullList()
         {
             PointsDistances.FindClosestPair(null);
         }
 
         [Test]
         [ExpectedException(typeof(ArgumentOutOfRangeException))]
-        public void TestFindClosestinEmptyList()
+        public void TestFindClosestInEmptyList()
         {
             PointsDistances.FindClosestPair(new Point[0]);
         }
