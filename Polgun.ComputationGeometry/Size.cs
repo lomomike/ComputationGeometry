@@ -181,7 +181,11 @@ namespace Polgun.ComputationGeometry
         /// <returns>Целое значение, указывающее значение хэша для этой структуры Size</returns>
         public override int GetHashCode()
         {
-            return base.GetHashCode();
+            unchecked
+            {
+                return (this.Width.GetHashCode() * 397) ^ this.Height.GetHashCode();
+            }
+            
         }
 
         /// <summary>

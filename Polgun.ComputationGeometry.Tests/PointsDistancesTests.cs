@@ -37,7 +37,7 @@ namespace Polgun.ComputationGeometry.Tests
         }
 
         [Test]
-        public void TestFindClosestInTwoPints()
+        public void TestFindClosestInTwoPoints()
         {
             Point point1 = new Point(10, 0);
             Point point2 = new Point(20, 0);
@@ -64,21 +64,17 @@ namespace Polgun.ComputationGeometry.Tests
         }
 
         [Test]
-        public void TestFindClosestInTenRandomPoints()
+        public void TestFindClosestInTenPoints()
         {
             List<Point> points = Enumerable.Range(0, 10)
                                            .Select(a => new Point(a * a, a * a))
                                            .ToList();
-
-            FindPairResult expectedResult = BruteForceClosestPoints(points);
+            var expectedResult = new [] { points.First(), points.Last() };
 
             FindPairResult result = PointsDistances.FindClosestPair(points);
 
-
-
-            AssertResult(expectedResult, result);
-
-        } 
+            CollectionAssert.AreEquivalent(expectedResult, new[] { result.Point1, result.Point2 });
+        }
         #endregion
 
         #region FindFarthestPoint Tests
@@ -140,96 +136,14 @@ namespace Polgun.ComputationGeometry.Tests
             List<Point> points = Enumerable.Range(0, 10)
                                            .Select(a => new Point(-1 * a * a, -1 * a * a))
                                            .ToList();
-            FindPairResult expectedResult = new FindPairResult(points.First(), points.Last());
+            var expectedResult = new[] { points.First(), points.Last() };
 
             FindPairResult result = PointsDistances.FindFarthestPair(points);
 
-            AssertResult(expectedResult, result);
+            CollectionAssert.AreEquivalent(expectedResult, new[] { result.Point1, result.Point2 });
+        }
 
-        } 
-        
 
         #endregion
-
-        private void AssertResult(FindPairResult expected, FindPairResult actual)
-        {
-            //Assert.That(actual.Point1, Is.EqualTo(expected.Point1));
-            //Assert.That(actual.Point2, Is.EqualTo(expected.Point2));
-            AssertMinimalPoints(expected, actual);
-            AssertMaximalPoints(expected, actual);
-            Assert.That(actual.Distance, Is.EqualTo(expected.Distance));
-        }
-
-        private void AssertMaximalPoints(FindPairResult expected, FindPairResult actual)
-        {
-            Point expectedMax = Max(expected.Point1, expected.Point2);
-            Point actualMax = Max(actual.Point1, actual.Point2);
-
-            Assert.That(actualMax, Is.EqualTo(expectedMax));
-        }
-
-        private void AssertMinimalPoints(FindPairResult expected, FindPairResult actual)
-        {
-            Point expectedMin = Min(expected.Point1, expected.Point2);
-            Point actualMin = Min(actual.Point1, actual.Point2);
-
-            Assert.That(actualMin, Is.EqualTo(expectedMin));
-        }
-
-        private Point Min(Point lvalue, Point rvalue)
-        {
-              if (lvalue.X < rvalue.X)
-            {
-                return lvalue;
-            }
-            else if (lvalue.X == rvalue.X)
-            {
-                if (lvalue.Y < rvalue.Y || lvalue.Y == rvalue.Y)
-                    return lvalue;
-            }
-            return rvalue;
-        }
-
-        private Point Max(Point lvalue, Point rvalue)
-        {
-            if (lvalue.X < rvalue.X)
-            {
-                return rvalue;
-            }
-            else if (lvalue.X == rvalue.X)
-            {
-                if (lvalue.Y < rvalue.Y || lvalue.Y == rvalue.Y)
-                    return rvalue;
-            }
-            return lvalue;
-        }
-
-        private FindPairResult BruteForceClosestPoints(IList<Point> points)
-        {
-            double minDistance = double.MaxValue;
-            Point point1 = default(Point);
-            Point point2 = default(Point);
-
-            for (int i = 0; i < points.Count - 1; ++i)
-                for (int j = i + 1; j < points.Count; ++j)
-                {
-                    double currentDistance = SquareDistance(points[i], points[j]);
-                    if (currentDistance < minDistance)
-                    {
-                        minDistance = currentDistance;
-                        point1 = points[i];
-                        point2 = points[j];
-                    }
-                }
-            return new FindPairResult(point1, point2);
-        }
-
-        private double SquareDistance(Point p1, Point p2)
-        {
-            double dx = p1.X - p2.X;
-            double dy = p1.Y - p2.Y;
-            return dx * dx + dy * dy;
-
-        } 
     }
 }

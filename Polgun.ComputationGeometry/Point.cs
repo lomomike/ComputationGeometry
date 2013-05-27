@@ -9,6 +9,8 @@ namespace Polgun.ComputationGeometry
     /// </summary>
     public struct Point
     {
+        private const double epsilon = 1e-6;
+
         private double m_x;
         private double m_y;
 
@@ -47,7 +49,7 @@ namespace Polgun.ComputationGeometry
         /// </summary>
         public bool IsEmpty
         {
-            get { return m_x == 0.0 && m_y == 0.0; }
+            get { return Math.Abs(m_x) < epsilon && Math.Abs(m_y) < epsilon; }
         }
 
         /// <summary>
@@ -65,9 +67,12 @@ namespace Polgun.ComputationGeometry
         /// <returns>Целое значение, указывающее значение хэша для этой структуры Point.</returns>
         public override int GetHashCode()
         {
-            return base.GetHashCode();
+            unchecked
+            {
+                return (m_y.GetHashCode() * 397) ^ m_x.GetHashCode();
+            }
         }
-
+        
         /// <summary>
         /// Определяет, содержит или нет объект Point те же координаты, что и указанный объект Object.
         /// </summary>
@@ -75,13 +80,16 @@ namespace Polgun.ComputationGeometry
         /// <returns>Метод возвращает значение true, если obj является Point и имеет такие же координаты как и данный Point</returns>
         public override bool Equals(Object obj)
         {
-            if (obj == null) return false;
-            if (this.GetType() != obj.GetType()) return false;
-
-            Point gpTmp = (Point)obj;
-            return this.m_x == gpTmp.m_x && this.m_y == gpTmp.m_y;
+            if (ReferenceEquals(null, obj)) return false;
+            return obj is Point && Equals((Point) obj);
         }
 
+        public bool Equals(Point other)
+        {
+            return m_y.Equals(other.m_y) && m_x.Equals(other.m_x);
+        }
+
+      
 
         #region Static Members
         /// <summary>
