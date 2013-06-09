@@ -69,7 +69,7 @@ namespace Polgun.ComputationGeometry.Tests
             List<Point> points = Enumerable.Range(0, 10)
                                            .Select(a => new Point(a * a, a * a))
                                            .ToList();
-            var expectedResult = new [] { points.First(), points.Last() };
+            var expectedResult = new [] { points[0], points[1] };
 
             FindPairResult result = PointsDistances.FindClosestPair(points);
 

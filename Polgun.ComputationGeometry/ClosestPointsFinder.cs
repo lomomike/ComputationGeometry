@@ -5,8 +5,8 @@ namespace Polgun.ComputationGeometry
 {
     internal class ClosestPointsFinder
     {
-        private List<Point> _xSeries; // Ordered by X series of xSeries
-        private List<Point> _ySeries;
+        private readonly List<Point> _xSeries; // Ordered by X series of xSeries
+        private readonly List<Point> _ySeries;
 
         private double _distance; // Distance betwee two result xSeries
         private Point _point1; // First result point
