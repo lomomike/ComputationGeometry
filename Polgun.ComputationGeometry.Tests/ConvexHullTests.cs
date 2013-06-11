@@ -55,6 +55,30 @@ namespace Polgun.ComputationGeometry.Tests
             CollectionAssert.AreEquivalent(expectedHull, hull);
         }
 
+        [Test]
+        public void TestJarvisSearchInTenPoints()
+        {
+            var expectedHull = new List<Point>
+                {
+                    new Point(10, 10),
+                    new Point(5, 20),
+                    new Point(10, 30),
+
+                    new Point(20, 33),
+                    new Point(20, 5),
+
+                    new Point(30, 30),
+                    new Point(33, 20),
+                    new Point(30, 10),
+
+                };
+
+            var hull = ConvexHull.Jarvis(expectedHull.Concat(new[] {new Point(15,15), 
+                                                                     new Point(25,25) }));
+
+            CollectionAssert.AreEquivalent(expectedHull, hull);
+        }
+
         
     }
 }
