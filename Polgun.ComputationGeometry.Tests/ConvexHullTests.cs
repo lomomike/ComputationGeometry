@@ -56,6 +56,29 @@ namespace Polgun.ComputationGeometry.Tests
         }
 
         [Test]
+        [ExpectedException]
+        public void TestJarvisSearchNullList()
+        {
+            ConvexHull.Jarvis(null);
+        }
+
+        [Test]
+        [ExpectedException]
+        public void TestJarvisSearchInOnePoint()
+        {
+            ConvexHull.Jarvis(new[] { new Point(0, 0) });
+        }
+
+        [Test]
+        public void TestJarvisSearchInTwoPoints()
+        {
+            List<Point> points = new List<Point> { new Point(0, 0), new Point(1, 1) };
+            var hull = ConvexHull.Jarvis(points);
+
+            CollectionAssert.AreEquivalent(hull, points);
+        }
+
+        [Test]
         public void TestJarvisSearchInTenPoints()
         {
             var expectedHull = new List<Point>

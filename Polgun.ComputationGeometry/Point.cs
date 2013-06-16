@@ -9,7 +9,7 @@ namespace Polgun.ComputationGeometry
     /// </summary>
     public struct Point
     {
-        private const double epsilon = 1e-6;
+        public const double Epsilon = 1e-6;
 
         private double m_x;
         private double m_y;
@@ -49,7 +49,7 @@ namespace Polgun.ComputationGeometry
         /// </summary>
         public bool IsEmpty
         {
-            get { return Math.Abs(m_x) < epsilon && Math.Abs(m_y) < epsilon; }
+            get { return Math.Abs(m_x) < Epsilon && Math.Abs(m_y) < Epsilon; }
         }
 
         /// <summary>
