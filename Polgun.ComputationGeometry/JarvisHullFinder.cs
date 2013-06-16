@@ -6,7 +6,7 @@ namespace Polgun.ComputationGeometry
 {
     internal class JarvisHullFinder
     {
-        private List<Point> _points;
+        private readonly List<Point> _points;
 
         public JarvisHullFinder(IEnumerable<Point> points)
         {
@@ -61,8 +61,8 @@ namespace Polgun.ComputationGeometry
 
             do
             {
-                //если currentPoint == leftDownPoint то следующий фор сменит nextPoint
-                //если фор не сменит leftDownPoint - полигон замкнулся - break
+                //if currentPoint == leftDownPoint, than the next for loop will change value of nextPoint 
+                //if the next for loop doesn't change - polygon is closed, stop looping
                 if (RightTurn(nextPoint, currentPoint, leftDownPoint))
                 {
                     nextPoint = leftDownPoint;
@@ -72,7 +72,7 @@ namespace Polgun.ComputationGeometry
                 for (int index = 0; index != _points.Count; index++)
                 {
                     Point tryPoint = _points[index];
-                    //если поворот вправо
+                    
                     if (RightTurn(nextPoint, currentPoint, tryPoint))
                     {
                         nextPoint = tryPoint;

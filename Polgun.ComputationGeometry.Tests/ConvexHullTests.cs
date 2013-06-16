@@ -102,6 +102,47 @@ namespace Polgun.ComputationGeometry.Tests
             CollectionAssert.AreEquivalent(expectedHull, hull);
         }
 
-        
+        [Test]
+        public void TestJarvisSearchInPointsWithTwoSamePointsOnX()
+        {
+            var expectedHull = new List<Point>
+                {
+                    
+                    new Point(10, 5),
+                    new Point(5, 20),
+                    new Point(10, 30),
+
+                    new Point(20, 33),
+                    new Point(20, 5),
+
+                    new Point(30, 30),
+                    new Point(33, 20),
+                    new Point(30, 10),
+
+                };
+
+            var points = new List<Point>
+                {
+                    new Point(10, 5),
+                    new Point(10, 10),
+                    new Point(5, 20),
+                    new Point(10, 30),
+
+                    new Point(20, 33),
+                    new Point(20, 5),
+
+                    new Point(30, 30),
+                    new Point(33, 20),
+                    new Point(30, 10),
+                    new Point(15,15), 
+                    new Point(25,25),
+                    new Point(27,25)
+
+                };
+
+            var hull = ConvexHull.Jarvis(points);
+
+            CollectionAssert.AreEquivalent(expectedHull, hull);
+        }
     }
 }
